@@ -1,0 +1,39 @@
+{
+  "name": "figures-inv",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "build:css": "tailwindcss build tailwind.css -o public/stylesheets/tailwind.css",
+    "watch:css": "nodemon -e css,js -w tailwind.css -w tailwind.config.js --exec 'npm run build:css'",
+    "populate:test": "node populatedb.js test",
+		"test": "NODE_ENV=test jest --verbose --runInBand"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.21.4",
+    "autoprefixer": "^10.4.14",
+    "compression": "^1.7.4",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "helmet": "^6.0.1",
+    "http-errors": "~1.6.3",
+    "mongoose": "^7.0.3",
+    "morgan": "~1.9.1",
+    "multer": "^1.4.5-lts.1",
+    "postcss": "^8.4.21",
+    "pug": "2.0.0-beta11",
+    "tailwindcss": "^3.3.1",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "dotenv": "^16.0.3",
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
+  },
+	"jest": {
+    "testEnvironment": "node",
+    "globalTeardown": "./tests/teardown.js",
+    "testTimeout": 15000
+  }
+}
