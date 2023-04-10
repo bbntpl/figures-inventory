@@ -5,8 +5,8 @@ exports.figureList = async (req, res) => {
 		.exec()
 		.then((figures) => {
 			//Successful, so render
-			res.render("author_list", {
-				title: 'figure_collection',
+			res.render('figure_collection', {
+				title: 'List of Figures',
 				figures,
 			});
 		})
@@ -14,4 +14,32 @@ exports.figureList = async (req, res) => {
 			//Failed, so dispaly error
 			next(`Error fetching figures: ${err}`)
 		})
+}
+
+exports.figureDetail = async (req, res) => {
+	res.send('GET - /figures/:id')
+}
+
+exports.figureCreateView = async (req, res) => {
+	res.send('GET - /figures/create')
+}
+
+exports.figureCreate = async (req, res) => {
+	res.send('POST - /figures/create')
+}
+
+exports.figureUpdateView = async (req, res) => {
+	res.send('GET - /figures/:id/update')
+}
+
+exports.figureUpdate = async (req, res) => {
+	res.send('POST - /figures/:id/update')
+}
+
+exports.figureDeletionView = async (req, res) => {
+	res.send('GET - /figures/:id/delete')
+}
+
+exports.figureDelete = async (req, res) => {
+	res.send('DELETE - /figures/:id/delete')
 }

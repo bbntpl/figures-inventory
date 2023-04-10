@@ -1,0 +1,19 @@
+nav.bg-blue-500.text-white.shadow-md
+	.container.mx-auto.px-6.py-4.flex.flex-wrap.justify-between.items-center
+		a(href='/').font-bold.text-lg.flex.items-center
+			div.logo.h-6.w-6.mr-2
+			| ABCXYZ Figures
+		ul(class='flex flex-col md:flex-row space-y-2 md:space-x-4 lg:space-x-6 text-sm md:text-base lg:text-lg xl:text-xl hidden md:block')
+			li.mr-6
+				a(href='/' class='hover:text-blue-300') Home
+			li.mr-6
+				a(href='/figures' class='hover:text-blue-300') Figures
+			li.mr-6
+				a(href='/characters' class='hover:text-blue-300') Characters
+			li.mr-6
+				a(href='/add-edit' class='hover:text-blue-300') Add/Edit
+			li.mr-6
+				a(href='/about' class='hover:text-blue-300') About
+			li.mr-6
+				button#dark-mode-toggle.ml-auto(type='button' onClick='toggleDarkMode()' class='focus:outline-none md:block')
+					i.fas.fa-moon

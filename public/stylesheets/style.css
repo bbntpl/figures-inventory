@@ -6,3 +6,33 @@ body {
 a {
   color: #00B7FF;
 }
+
+.logo {
+  width: 24px;
+  height: 14px;
+  background-color: #f7e7e3;
+  position: relative;
+}
+
+.logo:before,
+.logo:after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.logo:before {
+  top: -7px;
+  left: 0;
+  border-width: 0 12px 7px;
+  border-color: transparent transparent #f7e7e3;
+}
+
+.logo:after {
+  bottom: -7px;
+  left: 0;
+  border-width: 7px 12px 0;
+  border-color: #f7e7e3 transparent transparent;
+}

@@ -7,5 +7,5 @@ function readImageAsBuffer(imagePath) {
 }
 
 module.exports = {
-	readImageAsBuffer
+	readImageAsBuffer,
 }

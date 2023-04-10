@@ -9,6 +9,7 @@ const compression =require('compression');
 const indexRouter = require('./routes/index');
 const figuresRouter = require('./routes/figures');
 const charactersRouter = require('./routes/characters');
+const aboutRouter = require('./routes/about');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/figures', figuresRouter);
 app.use('/characters', charactersRouter);
+app.use('/about', aboutRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

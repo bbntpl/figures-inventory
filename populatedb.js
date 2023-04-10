@@ -15,7 +15,7 @@ const initialData = [
 	{
 		name: 'Ada Lovelace',
 		image: {
-			data: readImageAsBuffer('../public/images/ada_lovelace.jpeg'),
+			data: readImageAsBuffer('../public/images/figures/ada_lovelace.jpeg'),
 			contentType: 'image/jpeg'
 		},
 		character: {
@@ -31,7 +31,7 @@ const initialData = [
 	{
 		name: 'Abraham Lincoln',
 		image: {
-			data: readImageAsBuffer('../public/images/abraham_lincoln.jpeg'),
+			data: readImageAsBuffer('../public/images/figures/abraham_lincoln.jpeg'),
 			contentType: 'image/jpeg'
 		},
 		character: {
@@ -47,7 +47,7 @@ const initialData = [
 	{
 		name: 'Zoro wearing Sabo\'s suit',
 		image: {
-			data: readImageAsBuffer('../public/images/zoro_in_sabo_suit.jpeg'),
+			data: readImageAsBuffer('../public/images/figures/zoro_in_sabo_suit.jpeg'),
 			contentType: 'image/jpeg'
 		},
 		character: {
@@ -67,7 +67,7 @@ const initialData = [
 			franchise: 'Path of Exile'
 		},
 		image: {
-			data: readImageAsBuffer('../public/images/poe_scion.jpeg'),
+			data: readImageAsBuffer('../public/images/figures/poe_scion.jpeg'),
 			contentType: 'image/jpeg'
 		},
 		description: 'Scion is a unique and versatile character class in the popular action role-playing game, Path of Exile, developed by Grinding Gear Games. Introduced in 2013 as part of the "Release" version, Scion is a highly adaptable and customizable character, renowned for her ability to specialize in a wide range of playstyles.',
@@ -83,7 +83,7 @@ const initialData = [
 			franchise: 'Dark Souls'
 		},
 		image: {
-			data: readImageAsBuffer('../public/images/darksouls_main.jpeg'),
+			data: readImageAsBuffer('../public/images/figures/darksouls_main.jpeg'),
 			contentType: 'image/jpeg'
 		},
 		description: 'As the Chosen Undead clad in full armor marches towards their destiny, they embody the indomitable spirit of a true warrior, unyielding in their pursuit of a brighter future. The challenges that await may be unfathomable, but with unwavering resolve and an unbreakable will, the Chosen Undead stands ready to conquer the darkness and restore hope to a world on the brink of despair.',

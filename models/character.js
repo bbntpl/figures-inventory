@@ -8,6 +8,10 @@ const characterSchema = new mongoose.Schema({
 	franchise: {
 		type: String,
 		required: true
+	},
+	background: {
+		type: String,
+		required: false
 	}
 })
 
