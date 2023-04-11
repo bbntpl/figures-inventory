@@ -29,7 +29,8 @@ exports.characterDetail = async (req, res, next) => {
 	}
 };
 
-exports.characterCreateView = async (req, res) => {
+exports.characterCreateView = async (req, res, next) => {
+	console.log(req.params.id);
 	try {
 		res.render('character_create', { title: 'Create a New Character' });
 	} catch (err) {
@@ -70,7 +71,7 @@ exports.characterCreate = [
 			});
 
 			await character.save();
-			res.redirect(character.url);
+			res.redirect(`/characters/${character._id}`);
 		} catch (err) {
 			next(err);
 		}
@@ -125,7 +126,7 @@ exports.characterUpdate = [
 			};
 
 			await Character.findByIdAndUpdate(req.params.id, updatedCharacter);
-			res.redirect(`/characters/${req.params.id}`);
+			res.status(201).redirect(`/characters/${req.params.id}`);
 		} catch (err) {
 			next(err);
 		}
@@ -149,7 +150,7 @@ exports.characterDeletionView = async (req, res, next) => {
 exports.characterDelete = async (req, res, next) => {
 	try {
 		await Character.findByIdAndRemove(req.params.id);
-		res.redirect('/characters');
+		res.status(204).redirect('/characters');
 	} catch (err) {
 		next(err);
 	}

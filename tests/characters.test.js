@@ -96,7 +96,7 @@ describe('character edit', () => {
 
 		await api
 			.put(`/characters/${firstCharacter.id}/edit`)
-			.send(updatedData)
+			.send({ ...updatedData, _method: 'PUT' })
 			.expect(200);
 
 		const updatedCharacter = await Character.findById(firstCharacter.id);
@@ -123,7 +123,8 @@ describe('character deletion', () => {
 		const firstCharacter = characters[0];
 
 		await api
-			.delete(`/characters/${firstCharacter.id}/delete`)
+			.post(`/characters/${firstCharacter.id}/delete`)
+			.send({ _method: 'DELETE' })
 			.expect(204);
 
 		const deletedCharacter = await Character.findById(firstCharacter.id);

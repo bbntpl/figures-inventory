@@ -1,4 +1,8 @@
-const Figure = require('../models/figure')
+const { body, validationResult } = require('express-validator');
+const multer = require('multer');
+const Figure = require('../models/figure');
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 exports.figureList = async (req, res, next) => {
 	await Figure.find({})
@@ -24,7 +28,7 @@ exports.figureList = async (req, res, next) => {
 
 			//Successful, so render
 			res.render('figure_list', {
-				title: 'List of Figures',
+				title: 'User Figure Marketplace',
 				figures: figuresWithImageSrc
 			});
 		})
@@ -34,19 +38,17 @@ exports.figureList = async (req, res, next) => {
 		})
 }
 
-exports.figureDetail = async (req, res) => {
+exports.figureDetail = async (req, res, next) => {
 	await Figure.findById(req.params.id)
 		.populate('character')
 		.then(figure => {
-			const { image, ...figureWithoutImage } = figure;
 			// Convert buffer to base64-encoded string
 			const base64Image = image.data.toString('base64');
 			const imageSrc = `data:${image.contentType};base64,${base64Image}`;
 
 			//Successful, so render
-			res.render('figure_list', {
-				title: 'List of Figures',
-				figures: figureWithoutImage,
+			res.render('figure_detail', {
+				figure,
 				imageSrc
 			});
 		})
@@ -57,25 +59,104 @@ exports.figureDetail = async (req, res) => {
 }
 
 exports.figureCreateView = async (req, res) => {
-	res.send('GET - /figures/create')
-}
+	res.render('figure_create', { title: 'Create a New Figure' });
+};
 
-exports.figureCreate = async (req, res) => {
-	res.send('POST - /figures/create')
-}
+exports.figureCreate = [
+	upload.single('image'),
+	body('name', 'Name is required').trim().isLength({ min: 1 }).escape(),
+	body('description', 'Description is required').trim().isLength({ min: 1 }).escape(),
+	body('price', 'Price is required').isNumeric().toFloat(),
 
-exports.figureUpdateView = async (req, res) => {
-	res.send('GET - /figures/:id/update')
-}
+	async (req, res, next) => {
+		const errors = validationResult(req);
 
-exports.figureUpdate = async (req, res) => {
-	res.send('POST - /figures/:id/update')
-}
+		const figure = new Figure({
+			name: req.body.name,
+			character: req.body.character,
+			description: req.body.description,
+			price: req.body.price,
+			image: {
+				data: req.file.buffer,
+				contentType: req.file.mimetype,
+			},
+		});
 
-exports.figureDeletionView = async (req, res) => {
-	res.send('GET - /figures/:id/delete')
-}
+		if (!errors.isEmpty()) {
+			res.render('figure_create', {
+				title: 'Create a New Figure',
+				figure,
+				errors: errors.array()
+			});
+			return;
+		}
 
-exports.figureDelete = async (req, res) => {
-	res.send('DELETE - /figures/:id/delete')
-}
+		try {
+			await figure.save();
+			res.redirect(figure.url);
+		} catch (err) {
+			next(err);
+		}
+	},
+];
+
+exports.figureUpdateView = async (req, res, next) => {
+	try {
+		const figure = await Figure.findById(req.params.id);
+		res.render('figure_update', { title: 'Update Figure', figure });
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.figureUpdate = [
+	upload.single('image'),
+	body('name', 'Name is required').trim().isLength({ min: 1 }).escape(),
+	body('description', 'Description is required').trim().isLength({ min: 1 }).escape(),
+	body('price', 'Price is required').isNumeric().toFloat(),
+
+	async (req, res, next) => {
+		const errors = validationResult(req);
+
+		const updatedFigure = {
+			name: req.body.name,
+			character: req.body.character,
+			description: req.body.description,
+			price: req.body.price,
+			image: {
+				data: req.file.buffer,
+				contentType: req.file.mimetype,
+			},
+		};
+
+		if (!errors.isEmpty()) {
+			res.render('figure_update', { title: 'Update Figure', figure: updatedFigure, errors: errors.array() });
+			return;
+		}
+
+		try {
+			await Figure.findByIdAndUpdate(req.params.id, updatedFigure);
+			res.redirect(`/figures/${req.params.id}`);
+		} catch (err) {
+			next(err);
+		}
+	},
+];
+
+exports.figureDeletionView = async (req, res, next) => {
+	try {
+		const figure = await Figure.findById(req.params.id);
+		res.render('figure_delete', { title: 'Delete Figure', figure });
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.figureDelete = async (req, res, next) => {
+	try {
+		await Figure.findByIdAndRemove(req.params.id);
+		res.redirect('/figures');
+	} catch (err) {
+		next(err);
+	}
+};

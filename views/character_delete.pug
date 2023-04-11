@@ -10,6 +10,6 @@ block content
   if character.background
     p Background: #{character.background}
 
-  form(method="post" action="/characters/#{character.id}/delete")
-    input(type="hidden" name="_method" value="DELETE")
+  form(method="post" action='')
+    input(type="hidden" name="_method" required='true' value='DELETE')
     button(type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700") Delete Character

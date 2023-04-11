@@ -6,6 +6,7 @@ var logger = require('morgan');
 const helmet = require('helmet');
 const compression = require('compression');
 const mongoose = require('mongoose');
+const methodOverride = require('method-override');
 
 const indexRouter = require('./routes/index');
 const figuresRouter = require('./routes/figures');
@@ -27,7 +28,7 @@ mongoose.connect(config.MONGODB_URI)
 	})
 
 // A little bit of security setup
-if(config.NODE_ENV !== 'development' || 'test') {
+if(config.NODE_ENV === 'production') {
 	app.use(limiter)
 }
 
@@ -41,8 +42,9 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(compression());
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // routes setup

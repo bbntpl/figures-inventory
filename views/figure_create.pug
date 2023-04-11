@@ -3,7 +3,7 @@ extends layout
 block content
 
 	h1.text-4xl.font-semibold.text-center.mt-8 #{title}
-		form(method='POST' action='/figures/create')
+		form(method='POST' action='')
 			label.block.mt-4(for='name') Name:
 			input(type='text' id='name' name='name' required)
 
@@ -16,21 +16,21 @@ block content
 			input.border.border-gray-300.px-4.py-2.block.w-full(type='text' id='character' name='character' required)
 
 			label.block.mt-4(for="image") Image
-    	input#image.border.border-gray-300.px-4.py-2.block.w-full(type="file" name="image")
+			input#image.border.border-gray-300.px-4.py-2.block.w-full(type="file" name="image")
 
-    	label.block.mt-4(for="description") Description
-    	textarea#description.border.border-gray-300.px-4.py-2.block.w-full(name="description")
+			label.block.mt-4(for="description") Description
+			textarea#description.border.border-gray-300.px-4.py-2.block.w-full(name="description")
 
-    	label.block.mt-4(for="manufacturer") Manufacturer
-    	input#manufacturer.border.border-gray-300.px-4.py-2.block.w-full(type="text" name="manufacturer" required)
+			label.block.mt-4(for="manufacturer") Manufacturer
+			input#manufacturer.border.border-gray-300.px-4.py-2.block.w-full(type="text" name="manufacturer" required)
 
-    	label.block.mt-4(for="material") Material
-    	input#material.border.border-gray-300.px-4.py-2.block.w-full(type="text" name="material" required)
+			label.block.mt-4(for="material") Material
+			input#material.border.border-gray-300.px-4.py-2.block.w-full(type="text" name="material" required)
 
-    	label.block.mt-4(for="quantity") Quantity
-    	input#quantity.border.border-gray-300.px-4.py-2.block.w-full(type="number" name="quantity" min="1" value="1")
+			label.block.mt-4(for="quantity") Quantity
+			input#quantity.border.border-gray-300.px-4.py-2.block.w-full(type="number" name="quantity" min="1" value="1")
 
-    	label.block.mt-4(for="price") Price
-    	input#price.border.border-gray-300.px-4.py-2.block.w-full(type="number" name="price" required)
+			label.block.mt-4(for="price") Price
+			input#price.border.border-gray-300.px-4.py-2.block.w-full(type="number" name="price" required)
 
-    	button(type="submit" class='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700') Create Figure
+			button(type="submit" class='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700') Create Figure

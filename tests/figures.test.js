@@ -32,7 +32,8 @@ describe('figure read data', () => {
 			.expect(200)
 
 		const expectedTexts = [
-			'List of Figures',
+			'User Figure Marketplace',
+			'Total number of figures: 5',
 			'Ada Lovelace',
 			'Abraham Lincoln',
 			'Zoro wearing Sabo\'s suit',
@@ -54,7 +55,6 @@ describe('figure read data', () => {
 			.expect('Content-Type', /text\/html/)
 			.expect(200)
 
-		expect(response.status).toBe(200);
 		expect(response.text).toContain(firstFigure.name);
 	});
 });
@@ -92,7 +92,7 @@ describe('figure creation', () => {
 			.post('/figures/create')
 			.send(newFigureData)
 			.expect('Content-Type', /text\/html/)
-			.expect(200)
+			.expect(201)
 
 		const updatedFigures = await Figure.find({})
 
@@ -128,7 +128,8 @@ describe('figure update', () => {
 			.send({
 				...firstFigure,
 				name: updatedData.name,
-				description: updatedData.description
+				description: updatedData.description,
+				_method: 'PUT'
 			})
 			.expect(200);
 
@@ -157,7 +158,8 @@ describe('figure deletion', () => {
 
 		await api
 			.delete(`/figures/${firstFigure.id}/delete`)
-			.expect(200);
+			.send({ _method: 'DELETE' })
+			.expect(204);
 
 		const deletedFigure = await Figure.findById(firstFigure.id);
 		expect(deletedFigure).toBeNull();

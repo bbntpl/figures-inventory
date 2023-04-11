@@ -18,12 +18,12 @@ const initialData = [
 		},
 		character: {
 			name: 'Ada Lovelace',
-			franchise: 'Real Life'
+			franchise: 'Historical Figures'
 		},
 		description: 'A modern action figure of the world\'s first programmer - Ada Lovelace',
 		manufacturer: 'TimeWarp Figurines',
 		material: 'Painted Plastic',
-		quantity: 1,
+		quantity: 3,
 		price: 150
 	},
 	{
@@ -34,7 +34,7 @@ const initialData = [
 		},
 		character: {
 			name: 'Abraham Lincoln',
-			franchise: 'Real Life'
+			franchise: 'Historical Figures'
 		},
 		description: 'A modern action figure of the 17th president of the United States - Abraham Lincoln',
 		manufacturer: 'TimeWarp Figurines',
@@ -52,7 +52,7 @@ const initialData = [
 			name: 'Roronoa Zoro',
 			franchise: 'One Piece'
 		},
-		description: 'The right hand of One Piece pirates; Roronoa Zoro. But wait! He is wearing Sabo\'s outfit. How could that be????',
+		description: 'The right hand of Straw Hat pirates; Roronoa Zoro. But wait, he is wearing Sabo\'s outfit!!! How could that be?!?!?!!',
 		manufacturer: 'EpochArtisans Co.',
 		material: 'Painted Plastic',
 		quantity: 1,

@@ -3,7 +3,7 @@ extends layout
 block content
   h1(class='text-2xl font-bold mb-4') Edit Character: #{character.name}
 
-  form(method='post' action='/characters/#{character.id}/edit')
+  form(method='post' action='')
     input(type='hidden' name='_method' value='PUT')
 
     label(for='name') Name

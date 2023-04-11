@@ -26,11 +26,17 @@ const figureSchema = new mongoose.Schema({
 	quantity: { type: Number, default: 1 },
 	price: { type: Number, required: true },
 	//listedBy:
-	added: mongoose.Schema.Types.Date,
-	modified: mongoose.Schema.Types.Date
+	added: {
+		type: mongoose.Schema.Types.Date,
+		default: Date.now // Set the default value to the current date and time
+	},
+	modified: {
+		type: mongoose.Schema.Types.Date,
+		default: Date.now // Set the default value to the current date and time
+	},
 })
 
-figureSchema.set('toJSON', {
+const conversionObject = {
 	virtuals: true,
 	versionKey: false,
 	transform: function (doc, ret) {
@@ -38,7 +44,10 @@ figureSchema.set('toJSON', {
 		ret.id = ret._id;
 		delete ret._id;
 	},
-});
+}
+
+figureSchema.set('toJSON', conversionObject);
+figureSchema.set('toObject', conversionObject);
 
 const Figure = mongoose.model('Figure', figureSchema);
 
