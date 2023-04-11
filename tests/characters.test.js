@@ -1,27 +1,15 @@
 const app = require('../app');
 const supertest = require('supertest');
 const mongoose = require('mongoose');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
 
 const Character = require('../models/character');
-const { deleteTestDb } = require('./test_helper');
+const { createCharacters } = require('../utils/util_helper');
 
 const api = supertest(app)
 
 beforeEach(async () => {
-	const { stderr } = await exec('npm run populate:test');
-  if (stderr) {
-    console.error('Error populating test database:', stderr);
-  }
-});
-
-afterAll(async () => {
-  await mongoose.connection.close();
-});
-
-afterEach(async () => {
-	deleteTestDb();
+	await Character.deleteMany({});
+	await createCharacters().catch((err) => console.log(err))
 });
 
 describe('Initial data', () => {
@@ -39,7 +27,7 @@ describe('character list', () => {
 			.expect(200);
 
 		expect(response.status).toBe(200);
-		expect(response.text).toContain('List of Characters');
+		expect(response.text).toContain('Table of Characters');
 	});
 });
 
@@ -53,6 +41,7 @@ describe('character detail', () => {
 			.expect('Content-Type', /text\/html/)
 			.expect(200);
 
+		expect(response.text).toContain('Character Detail');
 		expect(response.text).toContain(firstCharacter.name);
 	});
 });
@@ -76,7 +65,7 @@ describe('character creation', () => {
 		await api
 			.post('/characters/create')
 			.send(newCharacterData)
-			.expect(200);
+			.expect(201);
 
 		const newCharacter = await Character.findOne({ name: 'New Character' });
 		expect(newCharacter.name).toBe(newCharacterData.name);
@@ -126,7 +115,6 @@ describe('character deletion', () => {
 			.expect('Content-Type', /text\/html/)
 			.expect(200);
 
-		expect(response.status).toBe(200);
 		expect(response.text).toContain(`Delete Character: ${firstCharacter.name}`);
 	});
 
@@ -134,11 +122,15 @@ describe('character deletion', () => {
 		const characters = await Character.find({});
 		const firstCharacter = characters[0];
 
-		const response = await api
+		await api
 			.delete(`/characters/${firstCharacter.id}/delete`)
-			.expect(200);
+			.expect(204);
 
 		const deletedCharacter = await Character.findById(firstCharacter.id);
 		expect(deletedCharacter).toBeNull();
 	});
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });

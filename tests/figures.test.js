@@ -1,34 +1,26 @@
 const app = require('../app');
 const supertest = require('supertest');
 const mongoose = require('mongoose');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
 
 const Figure = require('../models/figure');
-const { deleteTestDb } = require('./test_helper');
+const { 
+	populateDb, 
+	deleteTestDb, 
+} = require('../utils/util_helper');
 
 const api = supertest(app)
 
 beforeEach(async () => {
-	const { stderr } = await exec('npm run populate:test');
-	if (stderr) {
-		console.error('Error populating test database:', stderr);
-	}
-});
-
-afterAll(async () => {
-	await mongoose.connection.close();
-});
-
-afterEach(async () => {
-	deleteTestDb()
+	console.log('Before each test');
+	await deleteTestDb();
+	await populateDb().catch((err) => console.log(err))
 });
 
 describe('Initial data', () => {
 	it('populates the database', async () => {
-		const figures = await Figure.find({})
+		const figures = await Figure.find({});
 		expect(figures).toHaveLength(5);
-		expect(figures[0].name).toBe('Ada Lovelace')
+		expect(figures[0].name).toBe('Ada Lovelace');
 	});
 });
 
@@ -41,14 +33,17 @@ describe('figure read data', () => {
 
 		const expectedTexts = [
 			'List of Figures',
-			'<a>Ada Lovelace>/a>',
-			'<a>Abraham Lincoln</a>',
-			'<a>Zoro wearing Sabo\'s suit</a>'
+			'Ada Lovelace',
+			'Abraham Lincoln',
+			'Zoro wearing Sabo\'s suit',
+			'Path of Exile - Scion',
+			'Dark Souls - The Chosen Undead in Full Armor'
 		];
 
 		expectedTexts.forEach(text => {
 			expect(response.text).toContain(text)
 		})
+		expect(response.text).not.toContain('Buffer');
 	});
 
 	it('successfully expect 200 and display figure detail', async () => {
@@ -167,4 +162,9 @@ describe('figure deletion', () => {
 		const deletedFigure = await Figure.findById(firstFigure.id);
 		expect(deletedFigure).toBeNull();
 	});
+});
+
+afterAll(async () => {
+	console.log('After all tests');
+	await mongoose.connection.close();
 });

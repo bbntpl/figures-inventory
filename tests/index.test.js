@@ -10,6 +10,7 @@ describe('initial view setup', () => {
 			.expect('Content-Type', /text\/html/)
 			.expect(200)
 		expect(response.text).toContain('Welcome to ABCXYZ Figures')
+		expect(response.text).toContain('Discover and trade your favorite figures at the ultimate collector\'s marketplace!');
 	})
 })
 

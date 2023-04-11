@@ -7,13 +7,13 @@
 var app = require('../app');
 var debug = require('debug')('figures-inv:server');
 var http = require('http');
-require('dotenv').config()
+const config = require('../utils/config');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(config.PORT || '3000');
 app.set('port', port);
 
 /**

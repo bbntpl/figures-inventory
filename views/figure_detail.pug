@@ -1,0 +1,16 @@
+extends layout 
+
+block content 
+
+div.flex.flex-wrap.justify-center.items-center.mt-4
+	img.w-64.h-64.object-cover(src=imageSrc)
+	.ml-8
+		p Character: #{figure.character.name}
+		p Manufacturer: #{figure.manufacturer}
+		p Material: #{figure.material}
+		p Quantity: #{figure.quantity}
+		p Price: $#{figure.price}
+		p Added: #{figure.added}
+		p Modified: #{figure.modified}
+		p Description:
+		p.text-justify #{figure.description}

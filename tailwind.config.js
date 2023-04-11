@@ -5,7 +5,17 @@ module.exports = {
 	],
 	darkMode: 'class',
   theme: {
-    extend: {},
+    extend: {
+			backgroundColor: {
+        'primary': 'rgb(59 130 246)', // Replace with your primary color hex code.
+      },
+      textColor: {
+        'primary': 'rgb(59 130 246)', // Replace with your primary color hex code.
+      },
+      borderColor: {
+        'primary': 'rgb(59 130 246)', // Replace with your primary color hex code.
+      },
+		},
   },
 	variants: {
     extend: {},

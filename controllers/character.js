@@ -1,42 +1,156 @@
-const Character = require('../models/figure');
+const { body, validationResult } = require('express-validator');
+const Character = require('../models/character');
 
-exports.characterList = async (req, res) => {
-	try{
+exports.characterList = async (req, res, next) => {
+	try {
 		const characters = await Character.find({});
-
-		res.render('character_collection', {
-			title: 'List of Characters',
+		res.render('character_list', {
+			title: 'Table of Characters',
 			characters,
 		})
-	} catch(err) {
+	} catch (err) {
 		next(err)
 	}
 }
 
-exports.characterDetail = async (req, res) => {
-	res.send('GET - /characters/:id')
-}
+exports.characterDetail = async (req, res, next) => {
+	try {
+		const character = await Character.findById(req.params.id);
+		if (!character) {
+			const err = new Error('Character not found');
+			err.status = 404;
+			return next(err);
+		}
+		res.render('character_detail', {
+			character,
+		});
+	} catch (err) {
+		next(err);
+	}
+};
 
 exports.characterCreateView = async (req, res) => {
-	res.send('GET - /characters/:id/create')
-}
+	try {
+		res.render('character_create', { title: 'Create a New Character' });
+	} catch (err) {
+		next(err)
+	}
+};
 
-exports.characterCreate = async (req, res) => {
-	res.send('POST - /characters/:id/create')
-}
+exports.characterCreate = [
+	body('name', 'Name is required')
+		.trim()
+		.isLength({ min: 1 })
+		.escape(),
+	body('franchise', 'Franchise is required')
+		.trim()
+		.isLength({ min: 1 })
+		.escape(),
+	body('background')
+		.trim()
+		.escape(),
 
-exports.characterUpdateView = async (req, res) => {
-	res.send('GET - /characters/:id/update')
-}
+	async (req, res, next) => {
+		const errors = validationResult(req);
 
-exports.characterUpdate = async (req, res) => {
-	res.send('POST - /characters/:id/update')
-}
+		if (!errors.isEmpty()) {
+			res.render('character_create', {
+				title: 'Create Character',
+				character: req.body,
+				errors: errors.array(),
+			});
+			return;
+		}
 
-exports.characterDeletionView = async (req, res) => {
-	res.send('GET - /characters/:id/delete')
-}
+		try {
+			const character = new Character({
+				name: req.body.name,
+				franchise: req.body.franchise,
+				background: req.body.background,
+			});
 
-exports.characterDelete = async (req, res) => {
-	res.send('DELETE - /characters/:id/delete')
-}
+			await character.save();
+			res.redirect(character.url);
+		} catch (err) {
+			next(err);
+		}
+	},
+];
+
+exports.characterUpdateView = async (req, res
+	, next) => {
+	try {
+		const character = await Character.findById(req.params.id);
+		if (!character) {
+			const err = new Error('Character not found');
+			err.status = 404;
+			return next(err);
+		}
+		res.render('character_update', { title: 'Update Character', character });
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.characterUpdate = [
+	body('name', 'Name is required')
+		.trim()
+		.isLength({ min: 1 })
+		.escape(),
+	body('franchise', 'Franchise is required')
+		.trim()
+		.isLength({ min: 1 })
+		.escape(),
+	body('background')
+		.trim()
+		.escape(),
+
+	async (req, res, next) => {
+		const errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			res.render('character_update', {
+				title: 'Update Character',
+				character: req.body,
+				errors: errors.array(),
+			});
+			return;
+		}
+
+		try {
+			const updatedCharacter = {
+				name: req.body.name,
+				franchise: req.body.franchise,
+				background: req.body.background,
+			};
+
+			await Character.findByIdAndUpdate(req.params.id, updatedCharacter);
+			res.redirect(`/characters/${req.params.id}`);
+		} catch (err) {
+			next(err);
+		}
+	},
+];
+
+exports.characterDeletionView = async (req, res, next) => {
+	try {
+		const character = await Character.findById(req.params.id);
+		if (!character) {
+			const err = new Error('Character not found');
+			err.status = 404;
+			return next(err);
+		}
+		res.render('character_delete', { title: 'Delete Character', character });
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.characterDelete = async (req, res, next) => {
+	try {
+		await Character.findByIdAndRemove(req.params.id);
+		res.redirect('/characters');
+	} catch (err) {
+		next(err);
+	}
+};

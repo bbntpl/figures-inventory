@@ -7,7 +7,8 @@ const figureSchema = new mongoose.Schema({
 	},
 	character: {
 		type: mongoose.Schema.Types.ObjectId,
-		required: true
+		required: true,
+		ref: 'Character'
 	},
 	image: {
 		data: Buffer,

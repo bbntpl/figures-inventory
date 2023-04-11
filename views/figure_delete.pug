@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  h1.text-4xl.font-semibold.text-center.mt-8 Delete Figure: #{figure.name}
+
+  p.text-lg.text-center.mt-4 Are you sure you want to delete this figure?
+
+  .grid.grid-cols-2.gap-4.mt-8
+    p.text-right.font-semibold Name:
+    p #{figure.name}
+    p.text-right.font-semibold Character:
+    p #{figure.character.name} (#{figure.character.franchise})
+    p.text-right.font-semibold Manufacturer:
+    p #{figure.manufacturer}
+    p.text-right.font-semibold Material:
+    p #{figure.material}
+    p.text-right.font-semibold Quantity:
+    p #{figure.quantity}
+    p.text-right.font-semibold Price:
+    p #{figure.price}
+
+  form(method="post" action="/figures/#{figure.id}/delete")
+    input(type="hidden" name="_method" value="DELETE")
+    button(type="submit" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 mt-4") Delete Figure

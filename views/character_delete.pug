@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1(class="text-2xl font-bold mb-4") Delete Character: #{character.name}
+
+  p(class="mb-4") Are you sure you want to delete this character?
+
+  p Name: #{character.name}
+  p Franchise: #{character.franchise}
+  if character.background
+    p Background: #{character.background}
+
+  form(method="post" action="/characters/#{character.id}/delete")
+    input(type="hidden" name="_method" value="DELETE")
+    button(type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700") Delete Character

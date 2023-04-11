@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1(class='text-2xl font-bold mb-4') Edit Character: #{character.name}
+
+  form(method='post' action='/characters/#{character.id}/edit')
+    input(type='hidden' name='_method' value='PUT')
+
+    label(for='name') Name
+    input#name(type='text' name='name' value=character.name class='border border-black px-4 py-2' required)
+
+    label(for='franchise') Franchise
+    input#franchise(type='text' name='franchise' value=character.franchise class='border border-black px-4 py-2' required)
+
+    label(for='background') Background
+    textarea#background(name='background' class='border border-black px-4 py-2')=character.background
+
+    button(type='submit' class='bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700') Update Character

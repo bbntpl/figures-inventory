@@ -4,7 +4,7 @@ const app = express.Router();
 /* GET home page. */
 app.get('/', function(req, res, next) {
   res.render('index', { 
-		primaryQuote: 'A site where you can buy/sell your favorite/owned figures inventory',
+		primaryQuote: 'Discover and trade your favorite figures at the ultimate collector\'s marketplace!',
 		title: 'ABCXYZ Figures' 
 	});
 });
