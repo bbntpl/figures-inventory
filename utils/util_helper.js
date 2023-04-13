@@ -9,6 +9,10 @@ function readImageAsBuffer(imagePath) {
 	return fs.readFileSync(fullPath);
 }
 
+function isEmptyObject(obj) {
+  return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
+
 const initialData = [
 	{
 		name: 'Ada Lovelace',
@@ -151,4 +155,5 @@ module.exports = {
 	populateDbThenClose,
 	createCharacters,
 	deleteTestDb,
+	isEmptyObject
 }

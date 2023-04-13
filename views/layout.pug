@@ -6,11 +6,10 @@ html
 		link(rel='stylesheet' href='/stylesheets/style.css')
 		link(rel='stylesheet' href='/stylesheets/tailwind.css')
 		title ABCXYZ Figures
-		script(type='module' src='/javascripts/pug_funcs.js')
 
-	body
+	body(class=(!isHomepage ? (!isAboutPage ? '' : 'about-bg') : 'home-bg'))
 		include navbar.pug
-	main.min-h-screen.h-auto(class='sm:px-2 sm:py-4 sm:px-2 sm:py-4 md:px-3 md:py-6 lg:px-5 lg:py-10 lg:px-8 lg:py-10')
+	main.min-h-screen.h-auto(class='px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-12 lg:py-15 xl:px-14 xl:py-18')
 		block content
 	footer
 		div.bg-blue-600.text-white.py-6

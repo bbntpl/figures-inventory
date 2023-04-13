@@ -1,0 +1,21 @@
+extends layout
+
+block content
+	h1(class='text-2xl font-bold mb-4 text-center') #{title}
+
+	form(method='post' action='' class='w-full max-w-lg mx-auto')
+		input(type='hidden' name='_method' value='PUT')
+
+		div(class='mb-4')
+			label(for='name' class='block text-gray-700 text-sm font-bold mb-2') Name
+			input#name(type='text' name='name' value=(undefined === character ? '' : character.name) class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' required)
+
+		div(class='mb-4')
+			label(for='franchise' class='block text-gray-700 text-sm font-bold mb-2') Franchise
+			input#franchise(type='text' name='franchise' value=(undefined === character ? '' : character.franchise) class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' required)
+
+		div(class='mb-4')
+			label(for='background' class='block text-gray-700 text-sm font-bold mb-2') Background
+			textarea#background(name='background' class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' value=(undefined === character ? '' : character.background))
+
+		button(type='submit' class='bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-green-700') #{actionType} Character

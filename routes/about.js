@@ -2,9 +2,9 @@ const express = require('express');
 const app = express.Router();
 
 /* GET home page. */
-app.get('/about', function (req, res, next) {
+app.get('/', function (req, res, next) {
 	try {
-		res.render('about_page', { title: 'About the site' });
+		res.render('about', { isAboutPage: true });
 	} catch (err) {
 		next(err)
 	}

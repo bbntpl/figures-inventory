@@ -1,15 +1,25 @@
 extends layout
 
 block content
-  h1(class="text-2xl font-bold mb-4") Delete Character: #{character.name}
+	div(class="max-w-4xl mx-auto py-4 px-6")
+		if figures && figures.length > 0
+			p(class="text-lg font-semibold mb-4") Delete the following figures from the product listing before removing the character:
+			ul(class="list-disc list-inside mb-6")
+				each figure in figures 
+					li
+						a(href=`/figures/${figure.id}` class="text-blue-500 hover:text-blue-700 hover:underline")= figure.name
 
-  p(class="mb-4") Are you sure you want to delete this character?
+		else
+			h1(class="text-2xl font-bold mb-4") Delete Character: #{character.name}
 
-  p Name: #{character.name}
-  p Franchise: #{character.franchise}
-  if character.background
-    p Background: #{character.background}
+			p(class="mb-4") Are you sure you want to delete this character?
 
-  form(method="post" action='')
-    input(type="hidden" name="_method" required='true' value='DELETE')
-    button(type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700") Delete Character
+		p(class="mb-2") Name: #{character.name}
+		p(class="mb-2") Franchise: #{character.franchise}
+		if character.background
+			p(class="mb-2") Background: #{character.background}
+
+		if figures === undefined || figures.length <= 0
+			form(method="post" action='')
+				input(type="hidden" name="_method" required='true' value='DELETE')
+				button(type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700") Delete Character

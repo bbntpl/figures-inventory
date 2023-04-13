@@ -3,15 +3,15 @@ const supertest = require('supertest');
 const mongoose = require('mongoose');
 
 const Figure = require('../models/figure');
-const { 
-	populateDb, 
-	deleteTestDb, 
+const {
+	populateDb,
+	deleteTestDb,
+	readImageAsBuffer
 } = require('../utils/util_helper');
 
 const api = supertest(app)
 
 beforeEach(async () => {
-	console.log('Before each test');
 	await deleteTestDb();
 	await populateDb().catch((err) => console.log(err))
 });
@@ -47,15 +47,16 @@ describe('figure read data', () => {
 		expect(response.text).not.toContain('Buffer');
 	});
 
-	it('successfully expect 200 and display figure detail', async () => {
-		const figures = await Figure.find({});
-		const firstFigure = figures[0].id
+	it('successfully renders the figure detail', async () => {
+		const figures = await Figure.find({}).populate('character');
+		const firstFigure = figures[0]
 		const response = await api
 			.get(`/figures/${firstFigure.id}`)
 			.expect('Content-Type', /text\/html/)
 			.expect(200)
+		const { character } = firstFigure;
 
-		expect(response.text).toContain(firstFigure.name);
+		expect(response.text).toContain(`${character.name} (${character.franchise})`);
 	});
 });
 
@@ -69,14 +70,10 @@ describe('figure creation', () => {
 		expect(response.text).toContain('Add your Figure Product');
 	});
 
-	it('successfully expect 200 with figure addition', async () => {
+	it('successfully create a figure', async () => {
 		const initialDocsInFigures = await Figure.countDocuments();
 		const newFigureData = {
 			name: 'Model A',
-			image: {
-				data: readImageAsBuffer('../public/images/default.jpeg'),
-				contentType: 'image/jpeg'
-			},
 			character: {
 				name: 'Model A',
 				franchise: 'Tests'
@@ -88,22 +85,45 @@ describe('figure creation', () => {
 			price: 5
 		}
 
-		await api
+		// create a middleware function to bypass Multer and add file to req.file
+		const bypassMulter = (req, res, next) => {
+			const image = readImageAsBuffer('../public/images/default.png')
+			req.file = {
+				fieldname: 'image',
+				originalname: 'default.png',
+				buffer: image.buffer,
+				mimetype: image.contentType,
+			};
+			console.log(req.file)
+			next();
+		};
+
+		// add the bypassMulter middleware to your app handling upload
+		app.use(bypassMulter);
+
+		const response = await api
 			.post('/figures/create')
-			.send(newFigureData)
+			.send({ ...newFigureData, image: undefined }) // image in unneeded because bypassMulter handled it already
 			.expect('Content-Type', /text\/html/)
-			.expect(201)
+			.expect(302)
 
 		const updatedFigures = await Figure.find({})
+		const newFigure = await Figure.findOne({ name: 'New Character' });
 
 		expect(updatedFigures.length).toBe(initialDocsInFigures + 1);
 		expect(updatedFigures[initialDocsInFigures].name).toBe(newFigureData.name);
 		expect(updatedFigures[initialDocsInFigures].description).toBe(newFigureData.description);
+
+		// check if the redirect URL contains the /characters
+		expect(response.header.location).toBe(`/figures/${newFigure.id}`)
+
+		// remove the bypassMulter middleware after the test
+		app._router.stack.pop();
 	});
 });
 
-describe('figure update', () => {
-	it('successfully renders the update figure view', async () => {
+describe('figure edit', () => {
+	it('successfully renders the edit figure view', async () => {
 		const figures = await Figure.find({});
 		const firstFigure = figures[0];
 
@@ -115,7 +135,7 @@ describe('figure update', () => {
 		expect(response.text).toContain(`Edit Figure Information: ${firstFigure.name}`);
 	});
 
-	it('successfully updates a figure', async () => {
+	it('successfully edits a figure', async () => {
 		const figures = await Figure.find({});
 		const firstFigure = figures[0];
 		const updatedData = {
@@ -123,19 +143,40 @@ describe('figure update', () => {
 			description: 'Updated Figure Description'
 		};
 
-		await api
-			.put(`/figures/${firstFigure.id}/edit`)
+		// create a middleware function to bypass Multer and add file to req.file
+		const bypassMulter = (req, res, next) => {
+			const image = readImageAsBuffer('../public/images/default.png')
+			req.file = {
+				fieldname: 'image',
+				originalname: 'default.png',
+				buffer: image.buffer,
+				mimetype: image.contentType,
+			};
+			console.log(req.file)
+			next();
+		};
+
+		app.use(bypassMulter);
+
+		const response = await api
+			.post(`/figures/${firstFigure.id}/edit`)
 			.send({
 				...firstFigure,
 				name: updatedData.name,
 				description: updatedData.description,
 				_method: 'PUT'
 			})
-			.expect(200);
+			.expect(302);
 
 		const updatedFigure = await Figure.findById(firstFigure.id);
 		expect(updatedFigure.name).toBe(updatedData.name);
 		expect(updatedFigure.description).toBe(updatedData.description);
+
+		// check if the redirect URL contains the /characters
+		expect(response.header.location).toBe(`/figures/${firstFigure.id}`)
+
+		// remove the bypassMulter middleware after the test
+		app._router.stack.pop();
 	});
 });
 
@@ -156,17 +197,19 @@ describe('figure deletion', () => {
 		const figures = await Figure.find({});
 		const firstFigure = figures[0];
 
-		await api
-			.delete(`/figures/${firstFigure.id}/delete`)
+		const response = await api
+			.post(`/figures/${firstFigure.id}/delete`)
 			.send({ _method: 'DELETE' })
-			.expect(204);
+			.expect(302);
 
 		const deletedFigure = await Figure.findById(firstFigure.id);
 		expect(deletedFigure).toBeNull();
+
+		// check if the redirect URL contains the /characters
+		expect(response.header.location).toBe('/figures')
 	});
 });
 
 afterAll(async () => {
-	console.log('After all tests');
 	await mongoose.connection.close();
 });

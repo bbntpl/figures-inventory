@@ -25,3 +25,6 @@ Edit: I added background (type: varchar) field for the Character Model.
    - PORT=3000
 4. Run the application: `npm run devstart`
 5. Open your browser and navigate to `http://localhost:3000`
+
+## Sources
+- Image used are AI-generated art using Lexica.art

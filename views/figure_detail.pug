@@ -1,16 +1,22 @@
-extends layout 
+extends layout
 
-block content 
-
-	div.flex.flex-wrap.justify-center.items-center.mt-4
-		img.w-64.h-64.object-cover(src=imageSrc)
-		.ml-8
-			p Character: #{figure.character.name} from #{figure.character.franchise}
-			p Manufacturer: #{figure.manufacturer}
-			p Material: #{figure.material}
-			p Quantity: #{figure.quantity}
-			p Price: $#{figure.price}
-			p Added: #{figure.added}
-			p Modified: #{figure.modified}
-			p Description:
-			p.text-justify #{figure.description}
+block content
+  h1.font-large.text-2xl.font-bold.mb-4 #{figure.name}
+  div.flex.flex-wrap.justify-left.items-start.mt-4
+    img.w-64.h-full.object-cover.my-2(src=imageSrc)
+    div.ml-8.my-2
+      p(class='mb-2') Character: #{figure.character.name} (#{figure.character.franchise})
+      p(class='mb-2') Manufacturer: #{figure.manufacturer}
+      p(class='mb-2') Material: #{figure.material}
+      p(class='mb-2') Quantity: #{figure.quantity}
+      p(class='mb-2') Price: $#{figure.price}
+      p(class='mb-2') Added: #{figure.added}
+      p(class='mb-2') Modified: #{figure.modified}
+      p(class='mb-2 font-bold') Description:
+      p.text-justify.w-full #{figure.description}
+      
+  div.mt-4
+    a(href=`/figures/${figure.id}/edit`)
+      button(class='bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-blue-700 mr-2') Edit Figure
+    a(href=`/figures/${figure.id}/delete`)
+      button(class='bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-red-700') Delete Figure

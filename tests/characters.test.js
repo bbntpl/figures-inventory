@@ -13,10 +13,10 @@ beforeEach(async () => {
 });
 
 describe('Initial data', () => {
-  it('populates the database', async () => {
+	it('populates the database', async () => {
 		const characters = await Character.countDocuments({});
-    expect(characters).toEqual(5);
-  });
+		expect(characters).toEqual(5);
+	});
 });
 
 describe('character list', () => {
@@ -54,6 +54,7 @@ describe('character creation', () => {
 			.expect(200);
 
 		expect(response.text).toContain('Create a New Character');
+		expect(response.text).toContain('Create Character');
 	});
 
 	it('successfully creates a character', async () => {
@@ -62,14 +63,17 @@ describe('character creation', () => {
 			franchise: 'New Franchise'
 		};
 
-		await api
+		const response = await api
 			.post('/characters/create')
 			.send(newCharacterData)
-			.expect(201);
+			.expect(302);
 
 		const newCharacter = await Character.findOne({ name: 'New Character' });
 		expect(newCharacter.name).toBe(newCharacterData.name);
 		expect(newCharacter.franchise).toBe(newCharacterData.franchise);
+
+		// Check if the redirect URL contains the new character's ID
+		expect(response.header.location).toContain(`/characters/${newCharacter.id}`);
 	});
 });
 
@@ -94,14 +98,17 @@ describe('character edit', () => {
 			franchise: 'Updated Franchise'
 		};
 
-		await api
-			.put(`/characters/${firstCharacter.id}/edit`)
+		const response = await api
+			.post(`/characters/${firstCharacter.id}/edit`)
 			.send({ ...updatedData, _method: 'PUT' })
-			.expect(200);
+			.expect(302);
 
 		const updatedCharacter = await Character.findById(firstCharacter.id);
 		expect(updatedCharacter.name).toBe(updatedData.name);
 		expect(updatedCharacter.franchise).toBe(updatedData.franchise);
+
+		// Check if the redirect URL contains the new character's ID
+		expect(response.header.location).toContain(`/characters/${updatedCharacter.id}`);
 	});
 });
 
@@ -122,16 +129,19 @@ describe('character deletion', () => {
 		const characters = await Character.find({});
 		const firstCharacter = characters[0];
 
-		await api
+		const response = await api
 			.post(`/characters/${firstCharacter.id}/delete`)
 			.send({ _method: 'DELETE' })
-			.expect(204);
+			.expect(302);
 
 		const deletedCharacter = await Character.findById(firstCharacter.id);
 		expect(deletedCharacter).toBeNull();
+
+		// Check if the redirect URL contains the /characters
+		expect(response.header.location).toContain('/characters');
 	});
 });
 
 afterAll(async () => {
-  await mongoose.connection.close();
+	await mongoose.connection.close();
 });

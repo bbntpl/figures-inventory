@@ -7,9 +7,9 @@ app.get('/create', character.characterCreateView);
 
 app.post('/create', character.characterCreate);
 
-app.get('/:id/edit', character.characterUpdateView);
+app.get('/:id/edit', character.characterEditView);
 
-app.post('/:id/edit', character.characterUpdate);
+app.post('/:id/edit', character.characterEdit);
 
 app.get('/:id/delete', character.characterDeletionView);
 

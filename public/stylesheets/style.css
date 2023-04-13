@@ -2,8 +2,34 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+
+.home-bg {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('../images/home-bg.jpg');
+
+}
+
+.about-bg {
+	background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('../images/about-bg.jpg');
+}
+
+.home-bg, .about-bg {
+	background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 a {
   color: #00B7FF;
+}
+
+.feature-list {
+	list-style-type: none;
+	display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 250px));
+  gap: 24px;
+	margin: 2rem 0;
+	justify-content: center;
 }
 
 .logo {

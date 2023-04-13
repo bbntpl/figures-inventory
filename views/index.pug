@@ -2,29 +2,29 @@ extends layout
 
 block content
 	section.intro.py-12
-		.container.mx-auto.text-center.text-align
-			h1(class='text-blue-500 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 text-center')= primaryQuote
-			p.text-lg.text-center Welcome to #{title}, your one-stop destination for all your figure collection needs! Discover, collect, and manage your favorite figures and characters all in one place.
+		.container.mx-auto.text-center
+			h1(class='text-black-700 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-8')= primaryQuote
+			p.text-lg.text-center.mb-6 Welcome to #{title}, your one-stop destination for all your figure collection needs! Discover, collect, and sell figures and read info about all characters in one place.
 
 	section.features.py-12
 		.container.mx-auto
-			h2.text-2xl.font-bold.mb-6 Features
-			ul.feature-list.flex.flex-wrap.justify-around
-				li.w-full(class='md:w-1/3.px-4.mb-8')
-					h3.figure-collection.text-xl.font-semibold.mb-2
-					| Figure Collection
-					p Browse our extensive database of figures from popular series, movies, games and historical figures which are available as a product stock from other sellers.
-				li.w-full(class='md:w-1/3.px-4.mb-8')
-					h3.character-bios.text-xl.font-semibold.mb-2
-					| Character Bios
-					p Learn more about your favorite characters.
-				li.w-full(class='md:w-1/3.px-4.mb-8')
-					h3.add-edit.text-xl.font-semibold.mb-2
-					| Add/Edit for figure selling
-					p Contribute to our growing database by adding (selling) your figures and updating existing entries.
+			h2.text-2xl.font-bold.mb-6.text-center Features
+			ul.feature-list
+				li
+					a(href='/figures' class='block h-full bg-blue-100 hover:text-primary rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300')
+						h3.figure-collection.text-xl.font-semibold.mb-2.text-center Figure Collection
+						p.text-center Browse our extensive database of figures from popular series, movies, games, and historical figures which are available as a product stock from other sellers.
+				li
+					a(href='/characters' class='block h-full bg-blue-100 hover:text-primary rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300')
+						h3.character-bios.text-xl.font-semibold.mb-2.text-center Character Bios
+						p.text-center Learn more about your favorite characters.
+				li
+					a(href='/figures/create' class='block h-full bg-blue-100 hover:text-primary rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300')
+						h3.add-edit.text-xl.font-semibold.mb-2.text-center Add/Edit for figure selling
+						p.text-center Contribute to our growing database by adding (selling) your figures and updating existing entries.
 
-	section.call-to-action.bg-blue-200.py-12
+	section.bg-blue-200.py-12(class='-mx-4 -mb-4 sm:-mx-6 sm:-mb-8 md:-mx-8 md:-mb-10 lg:-mx-12 lg:-mb-15 xl:-mx-14 xl:-mb-18')
 		.container.mx-auto.text-center
-			h2.text-2xl.font-bold.mb-4 Ready to dive in?
-			p.text-lg Explore our vast collection of figures and characters now!
+			h2.text-2xl.font-bold.mb-6 Ready to dive in?
+			p.text-lg.mb-4 Explore our vast collection of figures and characters now!
 			a(href='/figures' class='cta-button inline-block bg-blue-500 text-white font-semibold py-3 px-6 rounded hover:bg-blue-600') Browse Figures
