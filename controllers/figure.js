@@ -213,7 +213,7 @@ exports.figureEdit = [
 					contentType: req.file.mimeType
 				}
 				: {
-					data: Buffer.from(req.body.existingImageData, 'base64'),
+					data: req.body.existingImageData,
 					contentType: req.body.existingImageContentType
 				},
 			material: req.body.material,
