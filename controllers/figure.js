@@ -3,7 +3,7 @@ const multer = require('multer');
 const Figure = require('../models/figure');
 const Character = require('../models/character');
 const upload = require('../utils/multerConfig');
-const { readImageAsBuffer, isEmptyObject } = require('../utils/util_helper');
+const { imageFromDocToImageSrc } = require('../utils/util_helper');
 
 exports.figureList = async (req, res, next) => {
 	await Figure.find({})
@@ -12,19 +12,9 @@ exports.figureList = async (req, res, next) => {
 		.then(figures => {
 			// Map figures array to a new array with imageSrc added
 			const figuresWithImageSrc = figures.map(figure => {
-				// use default image if figure does not have image
-				const image = (!figure.image || (figure.image && (figure.image.data === undefined || figure.image.data === null)))
-					? {
-						data: readImageAsBuffer('../public/images/default.png'),
-						contentType: 'image/png',
-					}
-					: figure.image;
+				const imageSrc = imageFromDocToImageSrc(figure.image)
 
-				// Convert buffer to base64-encoded string
-				const base64Image = image.data.toString('base64');
-				const imageSrc = `data:${image.contentType};base64,${base64Image}`;
-
-				// Return a new object with all properties and the imageSrc
+				// Return the new object with all properties and the imageSrc
 				return {
 					name: figure.name,
 					character: figure.character,
@@ -51,17 +41,7 @@ exports.figureDetail = async (req, res, next) => {
 	await Figure.findById(req.params.id)
 		.populate('character')
 		.then(figure => {
-			// use default image if figure does not have image
-			const image = (!figure.image || (figure.image && (figure.image.data === undefined || figure.image.data === null)))
-				? {
-					data: readImageAsBuffer('../public/images/default.png'),
-					contentType: 'image/png',
-				}
-				: figure.image;
-
-			// Convert buffer to base64-encoded string
-			const base64Image = image.data.toString('base64');
-			const imageSrc = `data:${image.contentType};base64,${base64Image}`;
+			const imageSrc = imageFromDocToImageSrc(figure.image)
 
 			//Successful, so render
 			res.render('figure_detail', {
@@ -77,7 +57,7 @@ exports.figureDetail = async (req, res, next) => {
 
 exports.figureCreateView = async (req, res, next) => {
 	try {
-		const characters = await Character.find({});
+		const characters = await Character.find({}).sort({ name: 1 });
 		res.render('figure_form', {
 			title: 'Add your Figure Product',
 			characters,
@@ -100,7 +80,7 @@ exports.figureCreate = [
 					actionType: 'Create',
 					errors: [{
 						msg: err.code === 'LIMIT_FILE_SIZE'
-							? 'File size too large. Maximum limit is 2MB.'
+							? 'File size too large. Maximum limit is 4MB.'
 							: err.message
 					}],
 				});
@@ -120,7 +100,6 @@ exports.figureCreate = [
 	body('price', 'Price is required').isNumeric().toFloat(),
 	async (req, res, next) => {
 		const errors = validationResult(req);
-		console.log(req.file);
 		const figure = new Figure({
 			name: req.body.name,
 			character: req.body.character,
@@ -138,7 +117,7 @@ exports.figureCreate = [
 		});
 
 		if (!errors.isEmpty()) {
-			const characters = await Character.find({});
+			const characters = await Character.find({}).sort({ name: 1 });
 
 			res.render('figure_form', {
 				title: 'Add your Figure Product',
@@ -161,13 +140,16 @@ exports.figureCreate = [
 
 exports.figureEditView = async (req, res, next) => {
 	try {
-		const characters = await Character.find({});
+		const characters = await Character.find({}).sort({ name: 1 });
 		const figure = await Figure.findById(req.params.id);
+		const imageSrc = imageFromDocToImageSrc(figure.image);
+
+		// render the figure form for update
 		res.render('figure_form', {
 			title: `Edit Figure Information: ${figure.name}`,
 			figure,
 			actionType: 'Edit',
-			imageSrc: req.file ? req.file.image : undefined,
+			imageSrc,
 			characters,
 		});
 	} catch (err) {
@@ -180,11 +162,19 @@ exports.figureEdit = [
 		const uploadMiddleware = upload.single('image');
 		uploadMiddleware(req, res, async (err) => {
 			const characters = await Character.find({});
+
+			const imageSrc = req.file
+				? imageFromDocToImageSrc({
+					data: req.file.buffer,
+					contentType: req.file.mimeType,
+				})
+				: imageFromDocToImageSrc(req.body.image);
+
 			if (err instanceof multer.MulterError) {
 				return res.status(400).render('figure_form', {
 					title: 'Add your Figure Product',
 					characters,
-					imageSrc: req.file ? req.file.image : undefined,
+					imageSrc,
 					actionType: 'Edit',
 					errors: [{
 						msg: err.code === 'LIMIT_FILE_SIZE'
@@ -196,7 +186,7 @@ exports.figureEdit = [
 				return res.status(400).render('figure_form', {
 					title: 'Add your Figure Product',
 					characters,
-					imageSrc: req.file ? req.file.image : undefined,
+					imageSrc,
 					actionType: 'Edit',
 					errors: [{ msg: err.message }],
 				});
@@ -217,32 +207,40 @@ exports.figureEdit = [
 			character: req.body.character,
 			description: req.body.description,
 			price: req.body.price,
-			image: req.file !== undefined
+			image: req.file
 				? {
 					data: req.file.buffer,
-					contentType: req.file.mimetype,
+					contentType: req.file.mimeType
 				}
-				: undefined,
+				: {
+					data: Buffer.from(req.body.existingImageData, 'base64'),
+					contentType: req.body.existingImageContentType
+				},
 			material: req.body.material,
 			manufacturer: req.body.manufacturer,
+			modified: Date.now(),
 			quantity: req.body.quantity || 1
 		};
-		console.log(updatedFigure)
-		if (!req.file) {
-			errors.errors.push({ msg: 'Image is required' });
-		}
 
 		if (!errors.isEmpty()) {
+			const characters = await Character.find({}).sort({ name: 1 })
+			const imageSrc = req.file
+				? imageFromDocToImageSrc({
+					data: req.file.buffer,
+					contentType: req.file.mimeType,
+				})
+				: imageFromDocToImageSrc(req.body.image);
+
 			res.render('figure_form', {
 				title: `Edit Figure Information: ${updatedFigure.name}`,
 				figure: updatedFigure,
 				actionType: 'Edit',
-				imageSrc: req.file ? req.file.image : undefined,
+				characters,
+				imageSrc,
 				errors: errors.array()
 			});
 			return;
 		}
-
 		try {
 			await Figure.findByIdAndUpdate(req.params.id, updatedFigure);
 			res.redirect(`/figures/${req.params.id}`);

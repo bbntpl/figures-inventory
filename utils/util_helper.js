@@ -9,8 +9,25 @@ function readImageAsBuffer(imagePath) {
 	return fs.readFileSync(fullPath);
 }
 
+// Convert image from mongoDB document to a image source
+function imageFromDocToImageSrc(imgFromDoc) {
+	// use default image if figure does not have image
+	const image = (!imgFromDoc || (imgFromDoc && (imgFromDoc.data === undefined || imgFromDoc.data === null)))
+		? {
+			data: readImageAsBuffer('../public/images/default.png'),
+			contentType: 'image/png',
+		}
+		: imgFromDoc;
+		
+	// Convert buffer to base64-encoded string
+	const base64Image = image.data.toString('base64');
+	const imageSrc = `data:${image.contentType};base64,${base64Image}`;
+
+	return imageSrc
+}
+
 function isEmptyObject(obj) {
-  return Object.keys(obj).length === 0 && obj.constructor === Object;
+	return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
 
 const initialData = [
@@ -101,12 +118,12 @@ const initialData = [
 async function populateDbThenClose() {
 	try {
 		console.log("Debug: Should be connected?");
-    await createFigures();
-  } catch (err) {
-    console.error("Error while creating figures:", err);
-  } finally {
-    await mongoose.connection.close();
-  }
+		await createFigures();
+	} catch (err) {
+		console.error("Error while creating figures:", err);
+	} finally {
+		await mongoose.connection.close();
+	}
 }
 
 async function populateDb() {
@@ -155,5 +172,6 @@ module.exports = {
 	populateDbThenClose,
 	createCharacters,
 	deleteTestDb,
-	isEmptyObject
+	isEmptyObject,
+	imageFromDocToImageSrc
 }

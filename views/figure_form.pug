@@ -1,4 +1,5 @@
 extends layout 
+include hidden_image_inputs
 
 block content
 
@@ -14,7 +15,11 @@ block content
 					option(value=character.id selected=(figure === undefined ? false : figure.character == character.id)) #{character.name} (#{character.franchise})
 
 			label.block.mt-4.text-gray-700.text-sm.font-bold.mb-2(for='image') Image
-			input#image.border.border-gray-300.px-4.py-2.block.w-full(type='file' name='image' value=(imageSrc === undefined ? undefined : imageSrc))
+			if imageSrc
+				img#image-preview(src=imageSrc alt='Image preview' class='mb-2 w-80')
+			input.border.border-gray-300.px-4.py-2.block.w-full(type='file' id='image-input' name='image')
+			if actionType === 'edit'
+				+hiddenImageInputs(figure)
 
 			label.block.mt-4.text-gray-700.text-sm.font-bold.mb-2(for='description') Description
 			textarea#description.border.border-gray-300.px-4.py-2.block.w-full(name='description')= figure === undefined ? '' : figure.description || ''
@@ -32,3 +37,8 @@ block content
 			input#price.border.border-gray-300.px-4.py-2.block.w-full(type='number' name='price' value=(figure === undefined ? '' : figure.price || '') required)
 
 			button(type='submit' class='bg-green-500 text-white px-4 py-2 my-2 rounded hover:bg-green-700') #{actionType} Figure
+
+			if errors
+				ul
+					for error in errors
+						li.text-red-500!= error.msg

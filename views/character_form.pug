@@ -19,3 +19,8 @@ block content
 			textarea#background(name='background' class='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline' value=(undefined === character ? '' : character.background))
 
 		button(type='submit' class='bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:bg-green-700') #{actionType} Character
+
+		if errors
+			ul
+				for error in errors
+					li!= error.msg

@@ -1,0 +1,4 @@
+mixin hiddenImageInputs(figure)
+	- const hasImage = (!figure.image  || (figure.image  && (figure.image.data === undefined || figure.image.data === null)));
+		input(type='hidden' name='existingImageData' value=(hasImage ? figure.image.data.toString('base64') : ''))
+		input(type='hidden' name='existingImageContentType' value=(hasImage ? figure.image.contentType : ''))

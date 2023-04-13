@@ -6,6 +6,7 @@ html
 		link(rel='stylesheet' href='/stylesheets/style.css')
 		link(rel='stylesheet' href='/stylesheets/tailwind.css')
 		title ABCXYZ Figures
+		script(src='/javascripts/pug_funcs.js')
 
 	body(class=(!isHomepage ? (!isAboutPage ? '' : 'about-bg') : 'home-bg'))
 		include navbar.pug

@@ -1,6 +1,7 @@
 const app = require('../app');
 const supertest = require('supertest');
 const mongoose = require('mongoose');
+const { Readable } = require('stream');
 
 const Figure = require('../models/figure');
 const {
@@ -8,6 +9,7 @@ const {
 	deleteTestDb,
 	readImageAsBuffer
 } = require('../utils/util_helper');
+const Character = require('../models/character');
 
 const api = supertest(app)
 
@@ -72,53 +74,35 @@ describe('figure creation', () => {
 
 	it('successfully create a figure', async () => {
 		const initialDocsInFigures = await Figure.countDocuments();
-		const newFigureData = {
-			name: 'Model A',
-			character: {
-				name: 'Model A',
-				franchise: 'Tests'
-			},
-			description: 'This is for testing purposes',
-			manufacturer: 'The Developer',
-			material: 'Wood',
-			quantity: 10,
-			price: 5
-		}
-
-		// create a middleware function to bypass Multer and add file to req.file
-		const bypassMulter = (req, res, next) => {
-			const image = readImageAsBuffer('../public/images/default.png')
-			req.file = {
-				fieldname: 'image',
-				originalname: 'default.png',
-				buffer: image.buffer,
-				mimetype: image.contentType,
-			};
-			console.log(req.file)
-			next();
-		};
-
-		// add the bypassMulter middleware to your app handling upload
-		app.use(bypassMulter);
+		const character = await Character.findOne({});
+		const buffer = readImageAsBuffer('../public/images/default.png');
 
 		const response = await api
 			.post('/figures/create')
-			.send({ ...newFigureData, image: undefined }) // image in unneeded because bypassMulter handled it already
-			.expect('Content-Type', /text\/html/)
+			.field('name', 'Model A')
+			.field('character', character._id.toString())
+			.field('description', 'This is for testing purposes')
+			.field('manufacturer', 'The Developer')
+			.field('material', 'Wood')
+			.field('quantity', 10)
+			.field('price', 5)
+			.attach('image', buffer, 'default.png')
 			.expect(302)
-
-		const updatedFigures = await Figure.find({})
-		const newFigure = await Figure.findOne({ name: 'New Character' });
-
-		expect(updatedFigures.length).toBe(initialDocsInFigures + 1);
-		expect(updatedFigures[initialDocsInFigures].name).toBe(newFigureData.name);
-		expect(updatedFigures[initialDocsInFigures].description).toBe(newFigureData.description);
+			.catch((err) => {
+				// handle the error and show a custom error message with more details
+				throw new Error(`Error occurred during the test: ${err.message}`);
+			});
+		const updatedDocsInFigures = await Figure.countDocuments();
+		const newFigure = await Figure.findOne({ name: 'Model A' });
+		
+		expect(updatedDocsInFigures).toEqual(initialDocsInFigures + 1);
+		expect(newFigure.character).toStrictEqual(character._id);
+		expect(newFigure.description).toBe('This is for testing purposes');
+		expect(newFigure.image).toHaveProperty('data');
+		expect(newFigure.image).toHaveProperty('contentType', 'image/png');
 
 		// check if the redirect URL contains the /characters
 		expect(response.header.location).toBe(`/figures/${newFigure.id}`)
-
-		// remove the bypassMulter middleware after the test
-		app._router.stack.pop();
 	});
 });
 
@@ -143,27 +127,19 @@ describe('figure edit', () => {
 			description: 'Updated Figure Description'
 		};
 
-		// create a middleware function to bypass Multer and add file to req.file
-		const bypassMulter = (req, res, next) => {
-			const image = readImageAsBuffer('../public/images/default.png')
-			req.file = {
-				fieldname: 'image',
-				originalname: 'default.png',
-				buffer: image.buffer,
-				mimetype: image.contentType,
-			};
-			console.log(req.file)
-			next();
-		};
-
-		app.use(bypassMulter);
-
+		const buffer = readImageAsBuffer('../public/images/default.png')
 		const response = await api
 			.post(`/figures/${firstFigure.id}/edit`)
 			.send({
-				...firstFigure,
+				character: firstFigure.character,
+				price: firstFigure.price,
+				material: firstFigure.material,
+				manufacturer: firstFigure.manufacturer,
+				quantity: firstFigure.quantity,
 				name: updatedData.name,
 				description: updatedData.description,
+				existingImageData: buffer,
+				existingImageContentType: 'image/png',
 				_method: 'PUT'
 			})
 			.expect(302);
@@ -174,9 +150,6 @@ describe('figure edit', () => {
 
 		// check if the redirect URL contains the /characters
 		expect(response.header.location).toBe(`/figures/${firstFigure.id}`)
-
-		// remove the bypassMulter middleware after the test
-		app._router.stack.pop();
 	});
 });
 
