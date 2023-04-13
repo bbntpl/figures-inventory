@@ -38,21 +38,19 @@ exports.figureList = async (req, res, next) => {
 }
 
 exports.figureDetail = async (req, res, next) => {
-	await Figure.findById(req.params.id)
-		.populate('character')
-		.then(figure => {
-			const imageSrc = imageFromDocToImageSrc(figure.image)
+	try {
+		const figure = await Figure.findById(req.params.id).populate('character');
+		const imageSrc = imageFromDocToImageSrc(figure.image);
 
-			//Successful, so render
-			res.render('figure_detail', {
-				figure,
-				imageSrc
-			});
-		})
-		.catch(err => {
-			// An error has occurred
-			next(`Error fetching figures: ${err}`)
-		})
+		// Successful, so render
+		res.render('figure_detail', {
+			figure,
+			imageSrc,
+		});
+	} catch (err) {
+		// An error has occurred
+		next(`Error fetching figures: ${err}`);
+	}
 }
 
 exports.figureCreateView = async (req, res, next) => {
@@ -95,8 +93,8 @@ exports.figureCreate = [
 			next();
 		});
 	},
-	body('name', 'Name is required').trim().isLength({ min: 1 }).escape(),
-	body('description', 'Description is required').trim().isLength({ min: 1 }).escape(),
+	body('name', 'Name is required').trim().isLength({ min: 1 }),
+	body('description', 'Description is required').trim().isLength({ min: 1 }),
 	body('price', 'Price is required').isNumeric().toFloat(),
 	async (req, res, next) => {
 		const errors = validationResult(req);
@@ -166,7 +164,7 @@ exports.figureEdit = [
 			const imageSrc = req.file
 				? imageFromDocToImageSrc({
 					data: req.file.buffer,
-					contentType: req.file.mimeType,
+					contentType: req.file.mimetype,
 				})
 				: imageFromDocToImageSrc(req.body.image);
 
@@ -194,28 +192,35 @@ exports.figureEdit = [
 			next();
 		});
 	},
-	body('name', 'Name is required').trim().isLength({ min: 1 }).escape(),
-	body('description', 'Description is required').trim().isLength({ min: 1 }).escape(),
+	body('name', 'Name is required').trim().isLength({ min: 1 }),
+	body('description', 'Description is required').trim().isLength({ min: 1 }),
 	body('material', 'Material is required').trim().isLength({ min: 1 }).escape(),
 	body('manufacturer', 'Manufacturer is required').trim().isLength({ min: 1 }).escape(),
 	body('price', 'Price is required').isNumeric().toFloat(),
 	async (req, res, next) => {
 		const errors = validationResult(req);
 
+		const getUpdatedImage = () => {
+			if (req.file) {
+				return {
+					data: req.file.buffer,
+					contentType: req.file.mimetype
+				}
+			} else if (!req.body.existingImageData && !req.body.existingImageContentType) {
+				return undefined;
+			}
+			return {
+				data: Buffer.from(req.body.existingImageData, 'base64'),
+				contentType: req.body.existingImageContentType
+			}
+		}
+		console.log(getUpdatedImage());
 		const updatedFigure = {
 			name: req.body.name,
 			character: req.body.character,
 			description: req.body.description,
 			price: req.body.price,
-			image: req.file
-				? {
-					data: req.file.buffer,
-					contentType: req.file.mimeType
-				}
-				: {
-					data: req.body.existingImageData,
-					contentType: req.body.existingImageContentType
-				},
+			image: getUpdatedImage(),
 			material: req.body.material,
 			manufacturer: req.body.manufacturer,
 			modified: Date.now(),
@@ -227,10 +232,9 @@ exports.figureEdit = [
 			const imageSrc = req.file
 				? imageFromDocToImageSrc({
 					data: req.file.buffer,
-					contentType: req.file.mimeType,
+					contentType: req.file.mimetype,
 				})
 				: imageFromDocToImageSrc(req.body.image);
-
 			res.render('figure_form', {
 				title: `Edit Figure Information: ${updatedFigure.name}`,
 				figure: updatedFigure,

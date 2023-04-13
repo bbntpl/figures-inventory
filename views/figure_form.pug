@@ -18,7 +18,7 @@ block content
 			if imageSrc
 				img#image-preview(src=imageSrc alt='Image preview' class='mb-2 w-80')
 			input.border.border-gray-300.px-4.py-2.block.w-full(type='file' id='image-input' name='image')
-			if actionType === 'edit'
+			if actionType === 'Edit'
 				+hiddenImageInputs(figure)
 
 			label.block.mt-4.text-gray-700.text-sm.font-bold.mb-2(for='description') Description
