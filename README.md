@@ -3,6 +3,8 @@ A simple inventory application using Node.js, Express, Pug template as the view 
 
 This application allows users to CRUD operations for figures and characters from the inventory. The application uses Tailwind CSS for styling and express-validator for input validation.
 
+Click [here](https://figures-inventory.fly.dev/) to access live demo.
+
 ## Features
 - View a list of all figures and characters
 - View details for individual figures and characters
